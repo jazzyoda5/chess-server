@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../chess-client/build', static_url_path='/')
 socketio = SocketIO(app)
 
 # Room: Num_Of_Users
@@ -9,8 +9,14 @@ rooms = {}
 
 
 @app.route('/')
+def index():
+    return app.send_static_file('index.html')
+    
+
+
+@app.route('/flaskserver')
 def serve_app():
-    return render_template("index.html", flask_token="Hello   world")
+    return 'Welcome to me bitch.'
 
 @socketio.on('move')
 def handle_move(data):
