@@ -11,7 +11,8 @@ rooms = {}
 @socketio.on('move')
 def handle_move(data):
     print('[RECIEVED] Move.')
-    emit('move', data, broadcast=True)
+    room = data['room_id']
+    emit('move', data, room=room)
 
 
 @socketio.on('message')
