@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from engine import get_move
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')
@@ -8,6 +9,7 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 rooms = {}
   
 
+# When recieved a move from online mode
 @socketio.on('move')
 def handle_move(data):
     print('[RECIEVED] Move.')
@@ -20,6 +22,7 @@ def handle_message(data):
     print('[MESSAGE RECIEVED] {}'.format(data))
 
 
+# Join a multiplayer game
 @socketio.on('join')
 def handle_join():
     # If there are no active rooms
@@ -73,11 +76,13 @@ def handle_join():
             ))
 
 
+# Multiplayer checkmate
 @socketio.on('checkmate')
 def handle_checkmate(data):
     emit('checkmate', data, room=data['room_id'])
 
 
+# Leave a multiplayer room
 @socketio.on('leave')
 def handle_leave(data):
     room = data['room_id']
@@ -97,6 +102,14 @@ def handle_leave(data):
     
     else:
         emit('opponent', 'left', room=room)
+
+
+# Singleplayer move
+@socketio.on('computer-move')
+def handle_comp_move(data):
+    print('[RECIEVED] Request for a move calculation. Data: ', data)
+    move = get_move(data)
+    emit('computer-move', move)
 
 
 @socketio.on('connect')
