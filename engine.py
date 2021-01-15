@@ -4,6 +4,8 @@ import copy
 import evaluation_tables as eval_tables
 # For now only returns a random move
 
+w_pawns = ['wR', 'wK', 'wB', 'wQ', 'wKn', 'wP']
+b_pawns = ['bR', 'bK', 'bB', 'bQ', 'bKn', 'bP']
 
 def get_move(data):
     # Get the data
@@ -23,7 +25,7 @@ def get_move(data):
     moves = board.generate_legal_moves()
 
     # Best move
-    max_eval = -1000
+    max_eval = -10000
 
     for uci_move in moves:
         move = chess.Move.from_uci(str(uci_move))
@@ -51,7 +53,7 @@ def get_move(data):
 def minimax(board, depth, alpha, beta, maximizing_player):
     if board.is_checkmate() and maximizing_player:
         # If computer can win, return a big evaluation like a thousand
-        return 1000
+        return 10000
 
     if depth == 0:
         evaluation = board_evaluation(board)
@@ -96,8 +98,6 @@ def minimax(board, depth, alpha, beta, maximizing_player):
 # Too lazy to translate my own chess logic from js to python
 # So using python-chess here
 def convert_format(game_state, comp_color, to_fen=True):
-    w_pawns = ['wR', 'wK', 'wB', 'wQ', 'wKn', 'wP']
-    b_pawns = ['bR', 'bK', 'bB', 'bQ', 'bKn', 'bP']
 
     if to_fen:
         pychess_pawns = ['r', 'k', 'b', 'q', 'n', 'p']
@@ -178,11 +178,10 @@ def convert_format(game_state, comp_color, to_fen=True):
 
 
 def board_evaluation(board):
-    eval_list = {'k': 900, 'q': 90, 'r': 50, 'b': 30, 'n': 30, 'p': 10,
-        'K': -900, 'Q': -90, 'R': -50, 'B': -30, 'N': -30, 'P': -10}
     evaluation = 0
 
     board_str = board.fen()
+
     i = 0
     y = 0
     x = 0
@@ -198,31 +197,24 @@ def board_evaluation(board):
             x += (num - 1)
 
         else: 
-            try:
-                value = eval_list[piece]
-                evaluation += value
 
-                # Position evaluation
-                eval_table = getattr(eval_tables, piece.lower())
+            value = eval_tables.eval_list[piece]
+            evaluation += value
 
-                # If piece is black invert the table
-                if piece.islower() and piece != 'q':
-                    inv_table = list(reversed(eval_table))
-                    # Get the proper eval table
-                    evaluation += inv_table[y][x]
+            # Position evaluation
+            eval_table = getattr(eval_tables, piece.lower())
 
-                else:
-                    evaluation += eval_table[y][x]
+            # If piece is black invert the table
+            if piece.islower() and piece != 'q':
+                inv_table = list(reversed(eval_table))
+                # Get the proper eval table
+                evaluation += inv_table[y][x]
 
-            except KeyError:
-                pass
+            else:
+                evaluation += eval_table[y][x]
         
         if piece != '/':
             x += 1
         i += 1
-
-    # Added point for mobility
-    num_of_moves = board.legal_moves.count()
-    evaluation += num_of_moves * 0.1
 
     return evaluation
