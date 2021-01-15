@@ -107,9 +107,10 @@ def handle_leave(data):
 # Singleplayer move
 @socketio.on('computer-move')
 def handle_comp_move(data):
-    print('[RECIEVED] Request for a move calculation. Data: ', data)
+    print('[RECIEVED] Request for a move calculation.')
     move = get_move(data)
     emit('computer-move', move)
+    print('[COMPUTER MOVE] Emitted.')
 
 
 @socketio.on('connect')
