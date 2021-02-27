@@ -2,11 +2,11 @@ from flask import Flask, render_template, jsonify
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from engine import get_move
 from app import create_app
+from flask_cors import CORS
 
 # Initialize the app
 app = create_app()
 socketio = SocketIO(app, cors_allowed_origins='*')
-
 ##################################################
 ##################################################
 # SOCKET
