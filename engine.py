@@ -13,6 +13,9 @@ def get_move(data):
     comp_color = data['comp_color']
     board = chess.Board(convert_format(game_state, comp_color))
 
+    global COUNT
+    COUNT = 0
+
     print('[ENGINE] Board recieved:')
     print(board)
 
@@ -51,6 +54,9 @@ def get_move(data):
 
 
 def minimax(board, depth, alpha, beta, maximizing_player):
+    global COUNT
+    COUNT += 1
+    print('Count : ', COUNT)
     if board.is_checkmate() and maximizing_player:
         # If computer can win, return a big evaluation like a thousand
         return 10000
@@ -60,7 +66,7 @@ def minimax(board, depth, alpha, beta, maximizing_player):
         return evaluation
 
     if maximizing_player:
-        max_eval = -1000
+        max_eval = -10000
         # Get all possible moves
         moves = board.generate_legal_moves()
 
@@ -77,7 +83,7 @@ def minimax(board, depth, alpha, beta, maximizing_player):
         return max_eval
 
     else:
-        min_eval = 1000
+        min_eval = 10000
         moves = board.generate_legal_moves()
 
         for uci_move in moves:
@@ -135,7 +141,6 @@ def convert_format(game_state, comp_color, to_fen=True):
 
                     # If it is top left square on the board it throws an error
                     except IndexError:
-                        print('whoops')
                         board += '1'
 
                 if j == 7 and i != 7:

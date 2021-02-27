@@ -1,11 +1,20 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from engine import get_move
+from app import create_app
 
-app = Flask(__name__)
+# Initialize the app
+app = create_app()
 socketio = SocketIO(app, cors_allowed_origins='*')
 
-# Room: Num_Of_Users
+##################################################
+##################################################
+# SOCKET
+##################################################
+##################################################
+
+
+# Rooms are saved like this -> rooms = {{ Room: Num_Of_Users }}
 rooms = {}
   
 
