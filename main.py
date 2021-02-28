@@ -7,6 +7,8 @@ from flask_cors import CORS
 # Initialize the app
 app = create_app()
 socketio = SocketIO(app, cors_allowed_origins='*')
+
+
 ##################################################
 ##################################################
 # SOCKET

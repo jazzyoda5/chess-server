@@ -54,12 +54,9 @@ def get_move(data):
 
 
 def minimax(board, depth, alpha, beta, maximizing_player):
-    global COUNT
-    COUNT += 1
-    print('Count : ', COUNT)
     if board.is_checkmate() and maximizing_player:
         # If computer can win, return a big evaluation like a thousand
-        return 10000
+        return 200000
 
     if depth == 0:
         evaluation = board_evaluation(board)
