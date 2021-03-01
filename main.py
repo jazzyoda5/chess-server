@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from engine import get_move
 from app import create_app
 from flask_cors import CORS
+from api import add_result_to_db
 
 # Initialize the app
 app = create_app()
@@ -113,6 +114,18 @@ def handle_leave(data):
     
     else:
         emit('opponent', 'left', room=room)
+
+
+@socketio.on('exchange_info')
+def exchange_info(data):
+    print('[INFO] ', data)
+    emit('exchange_info', data, room=data['room_id'])
+
+
+@socketio.on('game_result')
+def recieve_result(data):
+    print('[RESULT] data: ', data)
+    add_result_to_db(data)
 
 
 # Singleplayer move

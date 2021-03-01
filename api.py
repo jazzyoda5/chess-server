@@ -111,3 +111,97 @@ def logout():
     response = jsonify(success='User is logged out')
     return response
 
+
+#########################################
+#########################################
+# Leaderboard
+#########################################
+#########################################
+
+
+# Save the result to leaderboard table
+def add_result_to_db(data):
+    db = get_db()
+    # If it is a draw
+    if data['draw']:
+        # Handle draw
+        user1 = data['user1']
+        user2 = data['user2']
+    
+    else:
+        winner = data['winner']
+        looser = data['looser']
+
+        # Get winner's id
+        winner_data = db.execute(
+            'SELECT * FROM user WHERE username = ?', (winner,)
+        ).fetchone()
+        # Get winner's data in DB
+        winners_leaderb_data = db.execute(
+            'SELECT * FROM leaderboard WHERE user_id = ?', (winner_data['id'],)
+        ).fetchone()
+
+        # Winner already has some data on the leaderboard
+        if winners_leaderb_data is not None:
+            print('lalalala')
+            wins = winners_leaderb_data['wins']
+            db.execute(
+                'UPDATE leaderboard SET wins = ? WHERE user_id = ?', (wins + 1, winner_data['id'])
+            )
+        # Create a row for the user in the leaderboard
+        else:
+            db.execute(
+                'INSERT INTO leaderboard (user_id, wins, draws, loses) VALUES (?, ?, ?, ?)',
+                [winner_data['id'], 1, 0, 0]
+            )
+
+        # Repeat for looser
+        looser_data = db.execute(
+            'SELECT * FROM user WHERE username = ?', (looser,)
+        ).fetchone()
+        loosers_leaderb_data = db.execute(
+            'SELECT * FROM leaderboard WHERE user_id = ?', (looser_data['id'],)
+        ).fetchone()
+
+        if loosers_leaderb_data is not None:
+            print('lalalala2')
+            loses = loosers_leaderb_data['loses']
+            db.execute(
+                'UPDATE leaderboard SET loses = ? WHERE user_id = ?', (loses + 1, looser_data['id'])
+            )
+        else:
+            db.execute(
+                'INSERT INTO leaderboard (user_id, wins, draws, loses) VALUES (?, ?, ?, ?)',
+                [looser_data['id'], 0, 0, 1]
+            )
+        
+        db.commit()
+
+
+# Get the stats of players with top 10 wins
+@bp.route('/leaderboard_data', methods=['GET'])
+def get_lb_data():
+    db = get_db()
+
+    data = db.execute(
+        'SELECT * from leaderboard ORDER BY wins DESC LIMIT 10'
+    ).fetchall()
+
+    # Convert Row Objects to Json Objects
+    json_data = []
+    for row in data:
+        username = db.execute(
+            'SELECT username FROM user WHERE id = ?', (str(row['user_id'],))
+        ).fetchone()
+
+        if username is None:
+            username = 'Anonymous'
+        
+        json_data.append({
+            'username': username['username'],
+            'wins': row['wins'],
+            'draws': row['draws'],
+            'loses': row['loses']
+        })
+    
+    return jsonify(data=json_data, success="Data successfully sent")
