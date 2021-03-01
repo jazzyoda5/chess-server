@@ -143,7 +143,6 @@ def add_result_to_db(data):
 
         # Winner already has some data on the leaderboard
         if winners_leaderb_data is not None:
-            print('lalalala')
             wins = winners_leaderb_data['wins']
             db.execute(
                 'UPDATE leaderboard SET wins = ? WHERE user_id = ?', (wins + 1, winner_data['id'])
@@ -164,7 +163,6 @@ def add_result_to_db(data):
         ).fetchone()
 
         if loosers_leaderb_data is not None:
-            print('lalalala2')
             loses = loosers_leaderb_data['loses']
             db.execute(
                 'UPDATE leaderboard SET loses = ? WHERE user_id = ?', (loses + 1, looser_data['id'])

@@ -24,7 +24,6 @@ rooms = {}
 # When recieved a move from online mode
 @socketio.on('move')
 def handle_move(data):
-    print('[RECIEVED] Move.')
     room = data['room_id']
     emit('move', data, room=room)
 
@@ -118,13 +117,11 @@ def handle_leave(data):
 
 @socketio.on('exchange_info')
 def exchange_info(data):
-    print('[INFO] ', data)
     emit('exchange_info', data, room=data['room_id'])
 
 
 @socketio.on('game_result')
 def recieve_result(data):
-    print('[RESULT] data: ', data)
     add_result_to_db(data)
 
 
