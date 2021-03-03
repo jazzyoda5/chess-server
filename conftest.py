@@ -1,8 +1,10 @@
 import pytest
 from tempfile import mkstemp
 import os
+from main import socketio
 from app import create_app
 from db import init_db, get_db
+from flask_socketio import SocketIO
 import json
 
 
@@ -42,31 +44,7 @@ def runner(app):
     return app.test_cli_runner()
 
 
-def test_app():
-    assert 5
-
-"""
-class AuthActions(object):
-    def __init__(self, client):
-        self._client = client
-    
-    def login(self, username='test', password='test'):
-        data = json.loads({
-            'username': username,
-            'password': password
-        })
-        self._client.post(
-            '/api/login',
-            data=data,
-            headers={'Content-Type': 'application/json'}
-        )
-
-    
-    def logout(self):
-        self._client.get('/api/logout')
-
-
 @pytest.fixture
-def auth(client):
-    return AuthActions(client)
-"""
+def socketio(app):
+    return SocketIO(app)
+

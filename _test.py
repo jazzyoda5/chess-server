@@ -4,6 +4,7 @@ import json
 from flask import session, g
 from db import get_db
 from app import create_app
+from main import socketio
 
 # Test create_app
 
@@ -73,6 +74,16 @@ def test_get_lb_data(client, app):
     response = client.get('/api/leaderboard_data', headers={'Content-Type': 'application/json'})
 
     assert response.status_code == 200
-    assert len(response.json['data']) == 10
+    assert len(response.json['data']) <= 10
     assert response.json['success']
-    assert response.json['data'].username == b'Anonymous'
+
+
+# Test Socket
+
+def test_socket_connection(app):
+    socket = socketio.test_client(app)
+    assert socket.is_connected() == True
+
+    socket.disconnect()
+    assert socket.is_connected() == False
+
