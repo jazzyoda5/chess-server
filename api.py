@@ -193,7 +193,7 @@ def get_lb_data():
         ).fetchone()
 
         if username is None:
-            username = 'Anonymous'
+            username = {'username': 'Anonymous'}
         
         json_data.append({
             'username': username['username'],

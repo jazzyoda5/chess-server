@@ -14,6 +14,10 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, 'chessdb.sqlite'),
     )
 
+    if test_config is not None:        
+        app.config.update(test_config)
+
+
     app.register_blueprint(api.bp)
     db.init_app(app)
     
